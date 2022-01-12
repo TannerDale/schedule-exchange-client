@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-const SignUp = () => {
+const SignUp = ({ onAdd }) => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -9,7 +9,40 @@ const SignUp = () => {
   const [companyId, setCompanyId] = useState(0)
   const [companyPassword, setCompanyPassword] = useState('')
 
-  const formOption = (type, placeholder, value, method) => {
+  const onSubmit = (e) => {
+    e.preventDefault()
+
+    var unfilled = [
+      firstName,
+      lastName,
+      email,
+      password,
+      passwordConfirmation,
+      companyId,
+      companyPassword
+    ].filter((field) => !field )
+
+    if(unfilled.length > 0) {
+      alert('Please fill in all fields')
+      return
+    }
+
+    onAdd({ firstName, lastName, email, password, passwordConfirmation, companyId, companyPassword })
+
+    clearForm()
+  }
+
+  function clearForm() {
+    setFirstName('')
+    setLastName('')
+    setEmail('')
+    setPassword('')
+    setPasswordConfirmation('')
+    setCompanyId(0)
+    setCompanyPassword('')
+  }
+
+  const formField = (type, placeholder, value, method) => {
     return (
       <div className='form-floating mb-3'>
         <input
@@ -27,17 +60,17 @@ const SignUp = () => {
 
   return (
     <div className='container'>
-      <form className='create-user-form'>
+      <form className='create-user-form' onSubmit={onSubmit}>
 
-        {formOption('text', 'First Name', firstName, setFirstName)}
+        {formField('text', 'First Name', firstName, setFirstName)}
 
-        {formOption('text', 'Last Name', lastName, setLastName)}
+        {formField('text', 'Last Name', lastName, setLastName)}
 
-        {formOption('text', 'Email', email, setEmail)}
+        {formField('text', 'Email', email, setEmail)}
 
-        {formOption('password', 'Password', password, setPassword)}
+        {formField('password', 'Password', password, setPassword)}
 
-        {formOption('password', 'Confirm Password', passwordConfirmation, setPasswordConfirmation)}
+        {formField('password', 'Confirm Password', passwordConfirmation, setPasswordConfirmation)}
 
         <div className='form-control'>
           <label className='float-start'>Company ID</label>
@@ -50,7 +83,7 @@ const SignUp = () => {
         </div>
         <br/>
 
-        {formOption('password', 'Company Password', companyPassword, setCompanyPassword)}
+        {formField('password', 'Company Password', companyPassword, setCompanyPassword)}
 
         <input type='submit' value='Sign Up' className='btn btn-outline-primary float-start' />
       </form>

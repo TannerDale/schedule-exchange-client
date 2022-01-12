@@ -7,9 +7,10 @@ import SignUp from './components/user/SignUp'
 const App = () => {
   const [user, setUser] = useState({})
 
+  // Find User Info
   useEffect(() => {
     const getUser = async () => {
-      const userFromServer = await fetchUser(1)
+      const userFromServer = await fetchUser(user.firstName ? user.id : 10)
 
       setUser(formatUser(userFromServer))
     }
@@ -37,10 +38,22 @@ const App = () => {
     return data
   }
 
+  // Create User
+  const createUser = async (newUser) => {
+    const res = await fetch('http://localhost:5000/api/v1/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newUser)
+    })
+    const data = await res.json()
+
+    setUser(formatUser(data))
+  }
+
   return (
     <div className="App">
       <Dashboard user={user} />
-      <SignUp />
+      <SignUp onAdd={createUser} />
     </div>
   );
 }
