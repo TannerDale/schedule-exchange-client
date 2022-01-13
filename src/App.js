@@ -11,18 +11,20 @@ const App = () => {
 
   // Find User Info
   useEffect(() => {
-    fetch(`http://localhost:5000/api/v1/users/${user.id}`)
-      .then(res => res.json())
-      .then(
-        (result) => {
-          setUser(result)
-          result.id && setLoggedIn(true)
-        },
-        (error) => {
-          setLoggedIn(false)
-          setErrors(error)
-        }
-      )
+    if(user.id) {
+      fetch(`http://localhost:5000/api/v1/users/${user.id}`)
+        .then(res => res.json())
+        .then(
+          (result) => {
+            setUser(result)
+            result.id && setLoggedIn(true)
+          },
+          (error) => {
+            setLoggedIn(false)
+            setErrors(error)
+          }
+        )
+    }
   }, [])
 
   const formatUser = (rawUser) => {
