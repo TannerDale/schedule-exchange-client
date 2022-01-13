@@ -6,16 +6,23 @@ import SignUp from './components/user/SignUp'
 
 const App = () => {
   const [user, setUser] = useState({})
+  const [errors, setErrors] = useState({})
+  const [loggedIn, setLoggedIn] = useState(false)
 
   // Find User Info
   useEffect(() => {
-    const getUser = async () => {
-      const userFromServer = await fetchUser(user.firstName ? user.id : 10)
-
-      setUser(formatUser(userFromServer))
-    }
-
-    getUser()
+    fetch(`http://localhost:5000/api/v1/users/${user.id}`)
+      .then(res => res.json())
+      .then(
+        (result) => {
+          setUser(result)
+          result.id && setLoggedIn(true)
+        },
+        (error) => {
+          setLoggedIn(false)
+          setErrors(error)
+        }
+      )
   }, [])
 
   const formatUser = (rawUser) => {
@@ -31,13 +38,6 @@ const App = () => {
     return formattedUser
   }
 
-  const fetchUser = async (id) => {
-    const res = await fetch(`http://localhost:5000/api/v1/users/${id}`)
-    const data = await res.json()
-
-    return data
-  }
-
   // Create User
   const createUser = async (newUser) => {
     const res = await fetch('http://localhost:5000/api/v1/users', {
@@ -47,15 +47,25 @@ const App = () => {
     })
     const data = await res.json()
 
+    // Check for and display creation errors
+    if(data.error) {
+      setErrors(data)
+      return
+    }
+
     setUser(formatUser(data))
+    setLoggedIn(true)
   }
 
   return (
     <div className="App">
-      <Dashboard user={user} />
-      <SignUp onAdd={createUser} />
+      {loggedIn ? (
+        <Dashboard user={user} />
+        ) : (
+        <SignUp onAdd={createUser} errors={errors} />
+      )}
     </div>
-  );
+  )
 }
 
 export default App

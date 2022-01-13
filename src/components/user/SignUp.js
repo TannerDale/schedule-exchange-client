@@ -1,6 +1,7 @@
 import { useState } from 'react'
+import DisplayErrors from '../shared/DisplayErrors'
 
-const SignUp = ({ onAdd }) => {
+const SignUp = ({ onAdd, errors }) => {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [email, setEmail] = useState('')
@@ -60,6 +61,10 @@ const SignUp = ({ onAdd }) => {
 
   return (
     <div className='container'>
+      <h1>Welcome! Sign up below</h1>
+
+      {errors.message && <DisplayErrors errors={errors} />}
+
       <form className='create-user-form' onSubmit={onSubmit}>
 
         {formField('text', 'First Name', firstName, setFirstName)}
