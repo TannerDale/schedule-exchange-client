@@ -12,8 +12,8 @@ const DisplayErrors = ({ errors }) => {
     <div className='container'>
       <br/>
       <h3>Invalid data, please try again.</h3>
-      {formatErrorMessages().map((error) => (
-        <Error error={error} />
+      {formatErrorMessages().map((error, index) => (
+        <Error error={error} index={index} />
       ))}
     </div>
   )

@@ -34,12 +34,8 @@ const SignUp = ({ onAdd, errors }) => {
   }
 
   function clearForm() {
-    setFirstName('')
-    setLastName('')
-    setEmail('')
     setPassword('')
     setPasswordConfirmation('')
-    setCompanyId(0)
     setCompanyPassword('')
   }
 
@@ -49,12 +45,12 @@ const SignUp = ({ onAdd, errors }) => {
         <input
           type={type}
           className='form-control'
-          id='floatingInput'
+          id={`floatingInput${placeholder}`}
           placeholder={placeholder}
           value={value}
           onChange={(e) => method(e.target.value)}
         />
-        <label htmlFor='floatingInput'>{placeholder}</label>
+        <label htmlFor={`floatingInput${value}`}>{placeholder}</label>
       </div>
     )
   }
