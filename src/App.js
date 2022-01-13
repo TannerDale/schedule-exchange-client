@@ -1,29 +1,27 @@
 import './App.css';
 import { useState, useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
-import Dashboard from './components/user/Dashboard'
+import axios from 'axios'
 import SignUp from './components/user/SignUp'
+import Dashboard from './components/user/Dashboard'
 
 const App = () => {
   const [user, setUser] = useState({})
   const [errors, setErrors] = useState({})
-  const [loggedIn, setLoggedIn] = useState(false)
+  const [loggedIn, setLoggedIn] = useState(true)
 
   // Find User Info
   useEffect(() => {
-    if(user.id) {
-      fetch(`http://localhost:5000/api/v1/users/${user.id}`)
-        .then(res => res.json())
-        .then(
-          (result) => {
-            setUser(result)
-            result.id && setLoggedIn(true)
-          },
-          (error) => {
-            setLoggedIn(false)
-            setErrors(error)
-          }
-        )
+    if(1) {
+      axios.get(`http://localhost:5000/api/v1/users/${1}`)
+        .then((response) => {
+          setUser(formatUser(response.data))
+          response.data.id && setLoggedIn(true)
+        })
+        .catch((error) => {
+          setLoggedIn(false)
+          setErrors(error)
+        })
     }
   }, [])
 
@@ -34,7 +32,7 @@ const App = () => {
       lastName: rawUser.data.attributes.last_name,
       email: rawUser.data.attributes.email,
       role: rawUser.data.attributes.role,
-      companyId: rawUser.data.relationships.company.data.id,
+      companyId: rawUser.data.relationships.company.data.id
     }
 
     return formattedUser
@@ -42,31 +40,30 @@ const App = () => {
 
   // Create User
   const createUser = async (newUser) => {
-    const res = await fetch('http://localhost:5000/api/v1/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(newUser)
-    })
-    const data = await res.json()
-
-    // Check for and display creation errors
-    if(data.error) {
-      setErrors(data)
-      return
-    }
-
-    setUser(formatUser(data))
-    setLoggedIn(true)
+    axios.post('http://localhost:5000/api/v1/users', newUser)
+      .then((response) => {
+        setUser(formatUser(response.data))
+        setLoggedIn(true)
+      })
+      .catch((error) => {
+        console.log(error)
+        setErrors(error.response.data)
+      })
   }
 
   return (
-    <div className="App">
-      {loggedIn ? (
-        <Dashboard user={user} />
-        ) : (
-        <SignUp onAdd={createUser} errors={errors} />
-      )}
-    </div>
+    <Router>
+    <Routes>
+      <Route path='/' element={
+        loggedIn ? <Dashboard user={user} /> : <SignUp onAdd={createUser} errors={errors} />
+      } />
+      { /* <Route path='stores', element={<StoreFront />} />
+
+        ID is passed in automatically
+        <Route path=':id', element={<SingleStore />} />
+      */ }
+  </Routes>
+  </Router>
   )
 }
 
